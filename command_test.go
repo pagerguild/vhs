@@ -92,3 +92,40 @@ func requireNotDefaultTheme(tb testing.TB, theme Theme) {
 		tb.Fatalf("expected theme to be different from the default theme, got the default instead")
 	}
 }
+
+func TestInterpolateEnvVars(t *testing.T) {
+	t.Setenv("NAME", "Emmanuel Goldstein")
+	t.Setenv("LANG", "golang")
+	t.Setenv("USER", "egoldstein")
+
+	tests := map[string]struct {
+		input    string
+		expected string
+	}{
+		"single": {
+			input:    "Hello ${{NAME}}",
+			expected: "Hello Emmanuel Goldstein",
+		},
+		"multiple": {
+			input:    "${{LANG}}-${{NAME}}-${{LANG}}",
+			expected: "golang-Emmanuel Goldstein-golang",
+		},
+		"missing": {
+			input:    "Hi ${{MISSING}}",
+			expected: "Hi ",
+		},
+		"content-after": {
+			input:    "Hello, ${{USER}}!!!",
+			expected: "Hello, egoldstein!!!",
+		},
+	}
+
+	for name, tt := range tests {
+		name, tt := name, tt
+		t.Run(name, func(t *testing.T) {
+			if got := interpolateEnvVars(tt.input); got != tt.expected {
+				t.Fatalf("expected %q, got %q", tt.expected, got)
+			}
+		})
+	}
+}

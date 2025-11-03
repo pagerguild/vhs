@@ -334,7 +334,8 @@ func ExecuteType(c parser.Command, v *VHS) error {
 			return fmt.Errorf("failed to parse typing speed: %w", err)
 		}
 	}
-	for _, r := range c.Args {
+	text := interpolateEnvVars(c.Args)
+	for _, r := range text {
 		k, ok := keymap[r]
 		if ok {
 			err := v.Page.Keyboard.Type(k)
@@ -353,6 +354,18 @@ func ExecuteType(c parser.Command, v *VHS) error {
 	}
 
 	return nil
+}
+
+var envInterpolationPattern = regexp.MustCompile(`\$\{\{([A-Za-z_][A-Za-z0-9_]*)\}\}`)
+
+func interpolateEnvVars(input string) string {
+	return envInterpolationPattern.ReplaceAllStringFunc(input, func(match string) string {
+		values := envInterpolationPattern.FindStringSubmatch(match)
+		if len(values) != 2 {
+			return match
+		}
+		return os.Getenv(values[1])
+	})
 }
 
 // ExecuteOutput applies the output on the vhs videos.

@@ -534,6 +534,14 @@ in a terminal. Type is handy for both entering commands and interacting with
 prompts and TUIs in the terminal. The command takes a string argument of the
 characters to type.
 
+Environment variables interpolate with the `${{VARNAME}}` syntax, matching the
+values available to VHS at runtime. Unset variables resolve to an empty string.
+
+```elixir
+Env NAME "Emmanuel Goldstein"
+Type "Hello, ${{NAME}}!"
+```
+
 You can set the standard typing speed with [`Set TypingSpeed`](#set-typing-speed)
 and override it in places with a `@time` argument.
 

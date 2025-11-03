@@ -9,6 +9,12 @@ Type "Whatever you want"
 
 Sleep 1 Ctrl+U  Sleep 1
 
+# Type with an interpolated environment variable
+Env NAME "Emmanuel Goldstein"
+Type "Hello, ${{NAME}}!"
+Sleep 1
+Enter
+
 # Type something really slowly!
 Type@500ms "Slow down there, partner."
 
